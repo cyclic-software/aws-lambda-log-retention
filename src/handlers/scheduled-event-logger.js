@@ -20,11 +20,12 @@ async function updateLogGroups() {
       if (e.retentionInDays === undefined) {
         // console.log(JSON.stringify(e,null,2))
         console.log(e.logGroupName)
-        var params = {
+        var retentionParams = {
           logGroupName: e.logGroupName,
           retentionInDays: retentionInDays
         };
-        var logs = await cloudwatchlogs.describeLogGroups(params).promise()
+        var res = await cloudwatchlogs.putRetentionPolicy(retentionParams).promise()
+        console.log(JSON.stringify(res,null,2))
       }
     });
     // console.log(logs)
@@ -61,4 +62,4 @@ exports.scheduledEventLoggerHandler = async (event, context) => {
     await updateLogGroups()
 }
 
-exports.describeLogGroups = describeLogGroups
+exports.updateLogGroups = updateLogGroups

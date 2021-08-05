@@ -11,5 +11,8 @@
     },
     "scripts": {
         "test": "jest"
+    },
+    "jest": {
+      "modulePathIgnorePatterns": ["<rootDir>/.aws-sam/"]
     }
 }
