@@ -16,7 +16,7 @@ async function updateLogGroups() {
   while(next) {
     var logs = await cloudwatchlogs.describeLogGroups(params).promise()
 
-    logs.logGroups.forEach(e => {
+    logs.logGroups.forEach(async e => {
       if (e.retentionInDays === undefined) {
         // console.log(JSON.stringify(e,null,2))
         console.log(e.logGroupName)
