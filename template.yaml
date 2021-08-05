@@ -24,6 +24,7 @@ Resources:
       Description: A Lambda function that sets all /aws/lambda/* log groups retention days
       Runtime: nodejs14.x
       Handler: src/handlers/scheduled-event-logger.scheduledEventLoggerHandler
+      Role: !GetAtt 'ScheduledLambdaRole.Arn'
       # This property associates this Lambda function with a scheduled CloudWatch Event. For all available properties, see
       # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule
       # This runs at every 10:10
@@ -40,3 +41,36 @@ Resources:
     Properties:
       RetentionInDays: !Ref 'LambdaLogRetentionDays'
       LogGroupName: !Sub '/aws/lambda/${ScheduledLambda}'
+
+  ScheduledLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      # Path: !Ref ParamAppIAMPath
+      # PermissionsBoundary: !Ref HandlerFunctionBoundry
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyName: PublishToAppTopic
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:DescribeLogGroups
+                  - logs:PutRetentionPolicy
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::AccountId}:*:log-group:/aws/lambda/*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
+      # Tags:
+      # - Key: cyclic:app:name
+      #   Value: !Ref AWS::StackName
