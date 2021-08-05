@@ -53,8 +53,7 @@ package: build
 	@sam package \
 		--s3-bucket ${BUCKET} \
 		--s3-prefix ${APP_NAME}/${date}/${version} \
-		--no-progressbar \
-		--image-repository $$ACCOUNT.dkr.ecr.us-east-2.amazonaws.com/${app_name}
+		--no-progressbar
 
 .PHONY: deploy
 deploy: package
