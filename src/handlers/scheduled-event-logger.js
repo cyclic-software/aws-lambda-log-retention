@@ -4,7 +4,9 @@ AWS.config.update({
 });
 var cloudwatchlogs = new AWS.CloudWatchLogs();
 
-async function describeLogGroups() {
+const retentionInDays = process.env.LambdaLogRetentionDays || 7
+
+async function updateLogGroups() {
   var params = {
     limit: '5',
     logGroupNamePrefix: '/aws/lambda/'
@@ -18,6 +20,11 @@ async function describeLogGroups() {
       if (e.retentionInDays === undefined) {
         // console.log(JSON.stringify(e,null,2))
         console.log(e.logGroupName)
+        var params = {
+          logGroupName: e.logGroupName,
+          retentionInDays: retentionInDays
+        };
+        var logs = await cloudwatchlogs.describeLogGroups(params).promise()
       }
     });
     // console.log(logs)
@@ -51,7 +58,7 @@ exports.scheduledEventLoggerHandler = async (event, context) => {
     // All log statements are written to CloudWatch by default. For more information, see
     // https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-logging.html
     console.info(JSON.stringify(event));
-    await describeLogGroups()
+    await updateLogGroups()
 }
 
 exports.describeLogGroups = describeLogGroups
