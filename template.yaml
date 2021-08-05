@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  aws-lambda-log-retention
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Parameters:
+  LambdaLogRetentionDays:
+    Default: 14
+    Type: Number
+    Description: Number of days to keep lambda function logs
+
+Globals:
+  Function:
+    Environment:
+      Variables:
+        LambdaLogRetentionDays: !Ref LambdaLogRetentionDays
+
+Resources:
+  ScheduledLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: A Lambda function that sets all /aws/lambda/* log groups retention days
+      Runtime: nodejs14.x
+      Handler: src/handlers/scheduled-event-logger.scheduledEventLoggerHandler
+      # This property associates this Lambda function with a scheduled CloudWatch Event. For all available properties, see
+      # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule
+      # This runs at every 10:10
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(10 10 * * ? *)
+      MemorySize: 128
+      Timeout: 300
+
+  ScheduledLambdaLog:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: !Ref 'LambdaLogRetentionDays'
+      LogGroupName: !Sub '/aws/lambda/${ScheduledLambda}'
