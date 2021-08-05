@@ -57,7 +57,7 @@ Resources:
               Service:
                 - lambda.amazonaws.com
       Policies:
-        - PolicyName: PublishToAppTopic
+        - PolicyName: ScheduledLambdaRoleCustomPolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -66,11 +66,11 @@ Resources:
                   - logs:DescribeLogGroups
                   - logs:PutRetentionPolicy
                 Resource:
-                  - !Sub 'arn:${AWS::Partition}:logs:${AWS::AccountId}:*:log-group:/aws/lambda/*'
+                  - !Sub 'arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:/aws/lambda/*'
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
         - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
-      # Tags:
-      # - Key: cyclic:app:name
-      #   Value: !Ref AWS::StackName
+      Tags:
+      - Key: cyclic:app:name
+        Value: !Ref AWS::StackName

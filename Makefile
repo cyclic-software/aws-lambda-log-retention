@@ -61,6 +61,6 @@ deploy: package
 		--s3-bucket ${BUCKET} --s3-prefix ${APP_NAME}/${date}/${version} \
 		--stack-name ${APP_NAME} \
 		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
-		--no-fail-on-empty-changeset --tags logical_name=${APP_NAME} \
+		--no-fail-on-empty-changeset \
 		--no-confirm-changeset --region us-east-2 \
 		--no-progressbar
